@@ -1,0 +1,325 @@
+<menu>
+    <menuitem label='_t{Administration}'>
+        <icon>fa:university fa-fw</icon>
+        <menu>
+              <menuitem label='_t{Programs}'>
+                  <icon>fa:file-code-o fa-fw</icon>
+                  <action>SystemProgramList</action>
+              </menuitem>
+              <menuitem label='_t{Groups}'>
+                  <icon>fa:users fa-fw</icon> 
+                  <action>SystemGroupList</action>
+              </menuitem>
+              <menuitem label='_t{Units}'>
+                  <icon>fa:university fa-fw</icon>
+                  <action>SystemUnitList</action>
+              </menuitem>
+              <menuitem label='_t{Users}'>
+                  <icon>fa:user fa-fw</icon>
+                  <action>SystemUserList</action>
+              </menuitem>
+              <menuitem label='Usuários de Sistema'>
+                  <icon>fa:user fa-fw</icon>
+                  <action>SystemUserList_Mod</action>
+              </menuitem>
+              <menuitem label='Backup BD'>
+                  <icon>fa:download fa-fw</icon>
+                  <action>backupForm</action>
+              </menuitem>
+              <menuitem label='_t{SQL Panel}'>
+                  <icon>fa:table fa-fw</icon>
+                  <action>SystemSQLPanel</action>
+              </menuitem>
+              <menuitem label='PHP Info'>
+                  <icon>fa:code fa-fw</icon>
+                  <action>SystemPHPInfoView</action>
+              </menuitem>
+              <menuitem label='Config de Sistemas'>
+                  <icon>fa:gears fa-fw</icon>
+                  <action>configuraList</action>
+              </menuitem>
+              <menuitem label='_t{Preferences}'>
+                  <icon>fa:cog fa-fw</icon>
+                  <action>SystemPreferenceForm#method=onEdit</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+    
+    <menuitem label='Parametrização'>
+        <icon>fa:gears fa-fw</icon>
+        <menu>
+          <menuitem label='BDH - Afastamentos'>
+              <icon>fa:thumbs-o-down fa-fw</icon>
+              <action>afastamentosList</action>
+          </menuitem>
+          <menuitem label='BDH - Feriados'>
+              <icon>fa:calendar fa-fw</icon>
+              <action>feriadoList</action>
+          </menuitem>
+          <menuitem label='BDH - Indices'>
+              <icon>fa:sort-numeric-asc fa-fw</icon>
+              <action>indiceList</action>
+          </menuitem> 
+          <menuitem label='BDH - Turnos'>
+              <icon>fa:bell-o fa-fw</icon>
+              <action>turnosList</action>
+          </menuitem>
+          <menuitem label='Categoria Doc.'>
+              <icon>fa:file-text-o fa-fw</icon>
+              <action>CategoriasDocList</action>
+          </menuitem>
+          <menuitem label='Geral - Itens para Combo'>
+              <icon>fa:pencil fa-fw</icon>
+              <action>ItemList</action>
+          </menuitem>
+          <menuitem label='Geral - UF/Cidades'>
+              <icon>fa:globe fa-fw</icon>
+              <action>ufList</action>
+          </menuitem>
+          <menuitem label='OPMs'>
+              <icon>fa:home fa-fw</icon>
+              <action>OPMList</action>
+          </menuitem>
+        </menu>
+    </menuitem>
+    <menuitem label='_t{Documents}'>
+        <icon>fa:file-text-o fa-fw</icon>
+        <menu>
+              <menuitem label='_t{Send document}'>
+                  <icon>fa:cloud-upload fa-fw</icon>
+                  <action>SystemDocumentUploadForm</action>
+              </menuitem>
+              <menuitem label='_t{My documents}'>
+                  <icon>fa:archive fa-fw</icon>
+                  <action>SystemDocumentList</action>
+              </menuitem>
+              <menuitem label='_t{Shared with me}'>
+                  <icon>fa:share-alt fa-fw</icon>
+                  <action>SystemSharedDocumentList</action>
+              </menuitem>
+              <menuitem label='_t{Categories}'>
+                  <icon>fa:th fa-fw</icon>
+                  <action>SystemDocumentCategoryFormList</action>
+              </menuitem>
+              <menuitem label='Usuários GDOCS'>
+                  <icon>fa:user fa-fw</icon>
+                  <action>MantisUserTableList</action>
+              </menuitem>
+              <menuitem label='Documentos GDOCS'>
+                  <icon>fa:book fa-fw yellow</icon>
+                  <action>MantisBugTableList</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+    
+    <menuitem label='SIS-ACADÊMICO'>
+        <icon>fa:graduation-cap fa-fw</icon>
+        <menu>
+            <menuitem label='Aluno'>
+                <icon>fa:user blue fa-fw</icon>
+                <action>alunoList</action>
+            </menuitem>
+            <menuitem label='Configuração'>
+                <icon>fa:gears red fa-fw</icon>
+                <action>sisacadConfiguracao</action>
+            </menuitem>
+            <menuitem label='Controle de Aula'>
+                <icon>fa:calendar-check-o red  fa-fw</icon>
+                <action>ControleAulaList</action>
+            </menuitem>
+            <menuitem label='Curso'>
+                <icon>fa:flag blue fa-fw</icon>
+                <action>cursoList</action>
+            </menuitem>
+            <menuitem label='Disciplina/Professor'>
+                <icon>fa:group white fa-fw</icon>
+                <action>defineDisciplinaProfessorList</action>
+            </menuitem>
+            <menuitem label='Docentes'>
+                <icon>fa:graduation-cap blue fa-fw</icon>
+                <action>professorList</action>
+            </menuitem>
+            <menuitem label='Relatórios'>
+                <icon>fa:newspaper-o gray fa-fw</icon>
+                <action>sisacadRelatorios</action>
+            </menuitem>
+            <menuitem label='Turmas'>
+                <icon>fa:users blue fa-fw</icon>
+                <action>turmaList</action>
+            </menuitem>
+            <menuitem label='Despacha Provas'>
+                <icon>fa:flag-checkered green fa-fw red</icon>
+                <action>avaliacao_turmaList</action>
+            </menuitem>
+            <menuitem label='Corrige Provas'>
+                <icon>fa:pencil white fa-fw</icon>
+                <action>avaliacao_provaList</action>
+            </menuitem>
+            <menuitem label='Q.T.S.'>
+                <icon>fa:files-o fa-fw</icon> 
+                <action>gestaoAulasForm</action> 
+            </menuitem> 
+            <menuitem label='Validação'>
+                <icon>fa:check red fa-fw</icon>
+                <action>validar_aulaList</action>
+            </menuitem> 
+        </menu>
+    </menuitem>
+
+    
+    <menuitem label='Banco de Horas'>
+        <icon>fa:bell-o fa-fw</icon>
+        <menu>
+            <menuitem label='Lançamentos'>
+                <icon>fa:arrow-up fa-fw</icon>
+                <action>bdhManagerForm</action>
+            </menuitem>
+            <menuitem label='Configuração'>
+                <icon>fa:gears fa-fw</icon>
+                <action>bdhConfigForm</action>
+            </menuitem>
+        </menu>
+    </menuitem>
+    
+    <menuitem label='Gestão de OPM'>
+        <icon>fa:bell-o fa-fw</icon>
+        <menu>
+            <menuitem label='Criar Regência'>
+                <icon>fa:calendar-plus-o fa-fw green</icon>
+                <action></action>
+            </menuitem>
+            <menuitem label='Dados da OPM'>
+                <icon>fa:house fa-fw red</icon>
+                <action>prontuario_opmList</action>
+            </menuitem> 
+        </menu>
+    </menuitem>
+
+    <menuitem label='SIS-PESSOAL'>
+        <icon>fa:users fa-fw</icon>
+        <menu>
+            <menuitem label='Ficha Individual'>
+                <icon>fa:user fa-fw</icon>
+                <action>servidorList</action>
+            </menuitem>
+            <menuitem label='Cadastro em Lote'>
+                <icon>fa:flag-checkered fa-fw</icon>
+                <action></action>
+            </menuitem>
+            <menuitem label='Servidores Novos'>
+                <icon>fa:users fa-fw</icon>
+                <action>servidor_novoList</action>
+            </menuitem>
+            <menuitem label=''>
+                <icon>fa:users fa-fw</icon>
+                <action></action>
+            </menuitem>
+            <menuitem label=''>
+                <icon></icon>
+                <action></action>
+            </menuitem>
+            <menuitem label=''>
+                <icon>fa:files-o fa-fw</icon> 
+                <action></action> 
+            </menuitem> 
+            <menuitem label=''>
+                <icon></icon>
+                <action></action>
+            </menuitem> 
+        </menu>
+    </menuitem>
+
+    
+    <menuitem label='SIS-FREAP'>
+        <icon>fa:money fa-fw</icon>
+        <menu>
+            <menuitem label='Tipos de Cálculos'>
+                <icon>fa:calculator fa-fw</icon>
+                <action>tipoList</action>
+            </menuitem>
+            <menuitem label='Cadastro de Serviços'>
+                <icon>fa:edit fa-fw</icon>
+                <action>servicoList</action>
+            </menuitem>
+            <menuitem label='Contratos de Serviços'>
+                <icon>fa:shopping-basket fa-fw</icon> 
+                <action>contratoList</action> 
+            </menuitem>
+            <menuitem label='Contribuintes'>
+                <icon>fa:users fa-fw</icon>
+                <action>contribuinteList</action>
+            </menuitem>
+            <menuitem label='Serviços da OPM'>
+                <icon>fa:bank fa-fw</icon>
+                <action>OPM_ServicoList</action>
+            </menuitem>
+            <menuitem label='Serviços Externos'>
+                <icon>fa:exchange fa-fw</icon>
+                <action>OPM_ext_ServicoList</action>
+            </menuitem>
+            <menuitem label='Relatórios'>
+                <icon>fa:bar-chart fa-fw</icon> 
+                <action>contratoReport</action> 
+            </menuitem>
+            <menuitem label='Alteração de Valores'>
+                <icon>fa:refresh fa-fw</icon>
+                <action>servicoUpdateValores</action>
+            </menuitem> 
+        </menu>
+    </menuitem>
+    
+    
+    <menuitem label='Logs'>
+        <icon>fa:desktop fa-fw</icon>
+        <menu>
+              <menuitem label='_t{Access Stats}'>
+                  <icon>fa:bar-chart fa-fw</icon>
+                  <action>SystemAccessLogStats</action>
+              </menuitem>
+              <menuitem label='_t{Access Log}'>
+                  <icon>fa:key fa-fw</icon>
+                  <action>SystemAccessLogList</action>
+              </menuitem>
+              <menuitem label='_t{Change Log}'>
+                  <icon>fa:film fa-fw</icon>
+                  <action>SystemChangeLogView</action>
+              </menuitem>
+              <menuitem label='_t{SQL Log}'>
+                  <icon>fa:database fa-fw</icon>
+                  <action>SystemSqlLogList</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+        
+    <menuitem label='Common pages'>
+        <menu>
+            <menuitem label='Common page 1'>
+                <icon></icon>
+                <action>CommonPage</action>
+            </menuitem>
+            <menuitem label='Common page 2'>
+                <icon></icon>
+                <action>CommonPage</action>
+            </menuitem>
+            <menuitem label='Common page 3'>
+                <icon></icon>
+                <action>CommonPage</action>
+            </menuitem>
+        </menu>
+    </menuitem>
+    
+    <menuitem label='Logout'>
+        <icon>fa:sign-out fa-fw</icon>
+        <menu>
+              <menuitem label='Profile'>
+                  <icon>fa:user</icon>
+                  <action>SystemProfileView</action>
+              </menuitem>
+              
+              <menuitem label='Logout'>
+                  <action>LoginForm#method=onLogout#static=1</action>
+                  <icon>fa:sign-out fa-fw</icon>
+              </menuitem>
+        </menu>
+    </menuitem>
+</menu>

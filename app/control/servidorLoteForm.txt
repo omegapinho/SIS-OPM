@@ -1,0 +1,1 @@
+Debug: 2018-03-21 12:36:56 - SELECT * FROM efetivo.servidor WHERE (rgmilitar = '26416')

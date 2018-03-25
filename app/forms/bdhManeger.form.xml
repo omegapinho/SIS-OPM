@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <tframe id="0">
+        <class>TFrame</class>
+        <name>bdhManagerCmd</name>
+        <title>Gestão do Banco de Horas</title>
+        <x>55</x>
+        <y>65</y>
+        <width>931</width>
+        <height>126</height>
+        <child>
+            <tpanel>
+                <tbutton id="0">
+                    <class>TButton</class>
+                    <name>lancamentos</name>
+                    <x>65</x>
+                    <y>35</y>
+                    <value>Lançamento de Escala</value>
+                    <icon>ico_new.png</icon>
+                    <action>onAppend</action>
+                    <template>edit.php</template>
+                </tbutton>
+                <tbutton id="1">
+                    <class>TButton</class>
+                    <name>relatorios</name>
+                    <x>225</x>
+                    <y>35</y>
+                    <value>Visualizar Relatórios</value>
+                    <icon>ico_view.png</icon>
+                    <action>onReport</action>
+                    <template>save.php</template>
+                </tbutton>
+                <tbutton id="2">
+                    <class>TButton</class>
+                    <name>fechamento</name>
+                    <x>375</x>
+                    <y>35</y>
+                    <value>Fechamento de Escala</value>
+                    <icon>ico_apply.png</icon>
+                    <action>onFechar</action>
+                    <template></template>
+                </tbutton>
+                <tlabel id="3">
+                    <class>TLabel</class>
+                    <name>informativo</name>
+                    <x>225</x>
+                    <y>5</y>
+                    <color>#FF0000</color>
+                    <size>12</size>
+                    <style>b</style>
+                    <value>Opções de Serviço</value>
+                </tlabel>
+            </tpanel>
+        </child>
+    </tframe>
+    <tframe id="1">
+        <class>TFrame</class>
+        <name>bdhNotification</name>
+        <title>Notificações</title>
+        <x>55</x>
+        <y>200</y>
+        <width>930</width>
+        <height>140</height>
+        <child>
+            <tpanel/>
+        </child>
+    </tframe>
+</form>

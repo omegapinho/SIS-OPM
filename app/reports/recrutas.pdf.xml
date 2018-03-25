@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<design>
+    <page>
+        <format>a4</format>
+        <orientation>P</orientation>
+    </page>
+    <baseline id="1">
+        <class>Baseline</class>
+        <y>34</y>
+        <linewidth>4</linewidth>
+        <linecolor>#C0C0C0</linecolor>
+    </baseline>
+</design>

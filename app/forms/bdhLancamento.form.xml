@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <tframe id="0">
+        <class>TFrame</class>
+        <name>pesquisa</name>
+        <title>Pesquisa por:</title>
+        <x>5</x>
+        <y>5</y>
+        <width>990</width>
+        <height>80</height>
+        <child>
+            <tpanel>
+                <tlabel id="0">
+                    <class>TLabel</class>
+                    <name>label_rgmilitar</name>
+                    <x>10</x>
+                    <y>10</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>RG:</value>
+                </tlabel>
+                <tentry id="1">
+                    <class>TEntry</class>
+                    <name>rgmilitar</name>
+                    <x>40</x>
+                    <y>10</y>
+                    <value></value>
+                    <mask>9999999</mask>
+                    <width>90</width>
+                    <maxlen>7</maxlen>
+                    <editable>1</editable>
+                    <tip>Digite o RG do militar</tip>
+                    <required></required>
+                </tentry>
+                <tlabel id="2">
+                    <class>TLabel</class>
+                    <name>Label_opm</name>
+                    <x>235</x>
+                    <y>10</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>OPM:</value>
+                </tlabel>
+                <tbutton id="3">
+                    <class>TButton</class>
+                    <name>selecionaMilitar</name>
+                    <x>140</x>
+                    <y>8</y>
+                    <value>Seleciona</value>
+                    <icon>ico_down.png</icon>
+                    <action>onSelectMilitar</action>
+                    <template></template>
+                </tbutton>
+                <tdbcombo id="4">
+                    <class>TDBCombo</class>
+                    <name>opm</name>
+                    <database>sicad</database>
+                    <model>OPM</model>
+                    <key>id</key>
+                    <display>nome</display>
+                    <x>290</x>
+                    <y>10</y>
+                    <width>400</width>
+                    <tip>Selecione uma OPM para que os militares da mesma apareçam no campo listagem...</tip>
+                </tdbcombo>
+            </tpanel>
+        </child>
+    </tframe>
+    <tbutton id="1">
+        <class>TButton</class>
+        <name>adicionaPM</name>
+        <x>330</x>
+        <y>235</y>
+        <value>Add</value>
+        <icon>ico_add.png</icon>
+        <action>onAddPMSelect</action>
+        <template>edit.php</template>
+    </tbutton>
+    <tbutton id="2">
+        <class>TButton</class>
+        <name>deletaPM</name>
+        <x>330</x>
+        <y>270</y>
+        <value>Del</value>
+        <icon>ico_delete.png</icon>
+        <action>onDelPMSelect</action>
+        <template>delete.php</template>
+    </tbutton>
+    <tselect id="3">
+        <class>TSelect</class>
+        <name>lista_opm</name>
+        <items>0: - OPM Não selecionada - </items>
+        <x>5</x>
+        <y>130</y>
+        <width>300</width>
+        <height>280</height>
+        <tip></tip>
+    </tselect>
+    <tselect id="4">
+        <class>TSelect</class>
+        <name>lista_slc</name>
+        <items>0: - Nenhum Militar Selecionado - </items>
+        <x>400</x>
+        <y>130</y>
+        <width>300</width>
+        <height>280</height>
+        <tip></tip>
+    </tselect>
+    <tbutton id="5">
+        <class>TButton</class>
+        <name>clear</name>
+        <x>420</x>
+        <y>425</y>
+        <value>Limpa Seleção</value>
+        <icon>ico_no.png</icon>
+        <action>onClearSelect</action>
+        <template></template>
+    </tbutton>
+    <tlabel id="6">
+        <class>TLabel</class>
+        <name>Label_listaDaOPM</name>
+        <x>95</x>
+        <y>105</y>
+        <color>#FF0000</color>
+        <size>10</size>
+        <style>b</style>
+        <value>Listagem</value>
+    </tlabel>
+    <tlabel id="7">
+        <class>TLabel</class>
+        <name>Label_militaresSelecionados</name>
+        <x>505</x>
+        <y>105</y>
+        <color>#0000FF</color>
+        <size>10</size>
+        <style>b</style>
+        <value>Seleção</value>
+    </tlabel>
+    <tnotebook id="8">
+        <class>TNotebook</class>
+        <name>afasta_id</name>
+        <x>730</x>
+        <y>115</y>
+        <width>280</width>
+        <height>300</height>
+        <pages>
+            <tpanel id="1" tab="Ordinaria">
+                <tlabel id="0">
+                    <class>TLabel</class>
+                    <name>label16</name>
+                    <x>10</x>
+                    <y>25</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Escala</value>
+                </tlabel>
+                <tlabel id="1">
+                    <class>TLabel</class>
+                    <name>label17</name>
+                    <x>10</x>
+                    <y>60</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>De</value>
+                </tlabel>
+                <tdate id="2">
+                    <class>TDate</class>
+                    <name>dataInicial</name>
+                    <x>30</x>
+                    <y>55</y>
+                    <value></value>
+                    <mask>dd-mm-yyyy</mask>
+                    <width>80</width>
+                    <editable>1</editable>
+                    <tip>Data de Início da Escala</tip>
+                    <required></required>
+                </tdate>
+                <tlabel id="3">
+                    <class>TLabel</class>
+                    <name>label18</name>
+                    <x>140</x>
+                    <y>60</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>A</value>
+                </tlabel>
+                <tdate id="4">
+                    <class>TDate</class>
+                    <name>dataFinal</name>
+                    <x>155</x>
+                    <y>55</y>
+                    <value></value>
+                    <mask>dd-mm-yyyy</mask>
+                    <width>80</width>
+                    <editable>1</editable>
+                    <tip>Data Final da Escala</tip>
+                    <required></required>
+                </tdate>
+                <tlabel id="5">
+                    <class>TLabel</class>
+                    <name>label19</name>
+                    <x>10</x>
+                    <y>95</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Hora Inicial</value>
+                </tlabel>
+                <tentry id="6">
+                    <class>TEntry</class>
+                    <name>horaInicialOrdinario</name>
+                    <x>85</x>
+                    <y>90</y>
+                    <value></value>
+                    <mask>99:99</mask>
+                    <width>50</width>
+                    <maxlen>5</maxlen>
+                    <editable>1</editable>
+                    <tip>Entre com a hora que o trabalho desta escala se inicia.</tip>
+                    <required></required>
+                </tentry>
+                <tbutton id="7">
+                    <class>TButton</class>
+                    <name>geraOrdinaria</name>
+                    <x>95</x>
+                    <y>210</y>
+                    <value>Gera Escala</value>
+                    <icon>ico_save.png</icon>
+                    <action>onGeraOrdinaria</action>
+                    <template></template>
+                </tbutton>
+                <tcombo id="8">
+                    <class>TCombo</class>
+                    <name>turno</name>
+                    <items>0: Selecione Um Turno
+1: ---------------------</items>
+                    <x>55</x>
+                    <y>20</y>
+                    <width>200</width>
+                    <tip>Escolha uma Escala de serviço.</tip>
+                </tcombo>
+                <tdbcombo id="9">
+                    <class>TDBCombo</class>
+                    <name>opm_id_info</name>
+                    <database>sicad</database>
+                    <model>OPM</model>
+                    <key>id</key>
+                    <display>nome</display>
+                    <x>10</x>
+                    <y>150</y>
+                    <width>246</width>
+                    <tip>OPM que Informou a Escala. Será usado, também, quando se tratar de Escala Extra e Afastamentos...</tip>
+                </tdbcombo>
+                <tlabel id="10">
+                    <class>TLabel</class>
+                    <name>opm_info</name>
+                    <x>10</x>
+                    <y>125</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>OPM Informante</value>
+                </tlabel>
+                <tcombo id="11">
+                    <class>TCombo</class>
+                    <name>OPM_info_Atual</name>
+                    <items>S:SIM
+N:NÃO</items>
+                    <x>170</x>
+                    <y>180</y>
+                    <width>80</width>
+                    <tip>Usa a Unidade Informante como Unidade Atual do Militar. Vale para usar nas Escalas Extras e nos Afastamentos também.</tip>
+                </tcombo>
+                <tlabel id="12">
+                    <class>TLabel</class>
+                    <name>usa_OPM_info</name>
+                    <x>10</x>
+                    <y>185</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Usa Informante com Atual</value>
+                </tlabel>
+            </tpanel>
+            <tpanel id="2" tab="Extra">
+                <tlabel id="0">
+                    <class>TLabel</class>
+                    <name>label9</name>
+                    <x>10</x>
+                    <y>25</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Dias</value>
+                </tlabel>
+                <tentry id="1">
+                    <class>TEntry</class>
+                    <name>diasExtra</name>
+                    <x>45</x>
+                    <y>20</y>
+                    <value></value>
+                    <mask></mask>
+                    <width>170</width>
+                    <maxlen>0</maxlen>
+                    <editable>1</editable>
+                    <tip>Entre com o(s) dia(s). Pode se pontuar o dia separando por virgula ou, ainda, criar intervalos usando-se o traço. (1,2,5-10)</tip>
+                    <required></required>
+                </tentry>
+                <tlabel id="2">
+                    <class>TLabel</class>
+                    <name>label10</name>
+                    <x>10</x>
+                    <y>60</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Mês/Ano</value>
+                </tlabel>
+                <tcombo id="3">
+                    <class>TCombo</class>
+                    <name>mesExtra</name>
+                    <items>1:janeiro
+2:fevereiro
+3:março
+4:abril
+5:maio
+6:junho
+7:julho
+8:agosto
+9:setembro
+10:outubro
+11:novembro
+12:dezembro</items>
+                    <x>70</x>
+                    <y>55</y>
+                    <width>80</width>
+                    <tip>Escolha o Mês da Escala</tip>
+                </tcombo>
+                <tcombo id="4">
+                    <class>TCombo</class>
+                    <name>anoExtra</name>
+                    <items>2016:2016
+2017:2017
+2018:2018
+2019:2019
+2020:2020</items>
+                    <x>165</x>
+                    <y>55</y>
+                    <width>80</width>
+                    <tip>Escolha um ano</tip>
+                </tcombo>
+                <tbutton id="5">
+                    <class>TButton</class>
+                    <name>geraExtra</name>
+                    <x>95</x>
+                    <y>210</y>
+                    <value>Gera Escala</value>
+                    <icon>ico_save.png</icon>
+                    <action>onGeraExtra</action>
+                    <template></template>
+                </tbutton>
+                <tlabel id="6">
+                    <class>TLabel</class>
+                    <name>label11</name>
+                    <x>10</x>
+                    <y>95</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Hr Início</value>
+                </tlabel>
+                <tentry id="7">
+                    <class>TEntry</class>
+                    <name>horaInicioExtra</name>
+                    <x>60</x>
+                    <y>90</y>
+                    <value></value>
+                    <mask>99:99</mask>
+                    <width>50</width>
+                    <maxlen>5</maxlen>
+                    <editable>1</editable>
+                    <tip>Hora de início desta escala</tip>
+                    <required></required>
+                </tentry>
+                <tlabel id="8">
+                    <class>TLabel</class>
+                    <name>label12</name>
+                    <x>120</x>
+                    <y>95</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Horas Trab.</value>
+                </tlabel>
+                <tentry id="9">
+                    <class>TEntry</class>
+                    <name>horasTrabalhadas</name>
+                    <x>195</x>
+                    <y>90</y>
+                    <value></value>
+                    <mask>99</mask>
+                    <width>50</width>
+                    <maxlen>2</maxlen>
+                    <editable>1</editable>
+                    <tip>Quantidade de horas trabalhadas</tip>
+                    <required></required>
+                </tentry>
+                <tcombo id="10">
+                    <class>TCombo</class>
+                    <name>tipoExtra</name>
+                    <items>N:Administrativa
+S:Renumerada</items>
+                    <x>85</x>
+                    <y>125</y>
+                    <width>170</width>
+                    <tip>Se a escala não gera ônus (pagamento de extra) escolha Administrativa.</tip>
+                </tcombo>
+                <tlabel id="11">
+                    <class>TLabel</class>
+                    <name>label13</name>
+                    <x>10</x>
+                    <y>130</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Tipo Escala</value>
+                </tlabel>
+            </tpanel>
+            <tpanel id="3" tab="Afastamentos">
+                <tbutton id="0">
+                    <class>TButton</class>
+                    <name>geraAfastamento</name>
+                    <x>75</x>
+                    <y>210</y>
+                    <value>Gera Afastamento</value>
+                    <icon>ico_save.png</icon>
+                    <action>ongeraAfastamento</action>
+                    <template></template>
+                </tbutton>
+                <tdate id="1">
+                    <class>TDate</class>
+                    <name>dtinicioaf</name>
+                    <x>75</x>
+                    <y>45</y>
+                    <value></value>
+                    <mask>dd-mm-yyyy</mask>
+                    <width>90</width>
+                    <editable>1</editable>
+                    <tip>Entre com a data que inicial do Afastamento. (Requerido para Gerar e Limpar)</tip>
+                    <required></required>
+                </tdate>
+                <tlabel id="2">
+                    <class>TLabel</class>
+                    <name>laberAfastamento</name>
+                    <x>10</x>
+                    <y>15</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Afastamento</value>
+                </tlabel>
+                <tdbcombo id="3">
+                    <class>TDBCombo</class>
+                    <name>afasta_id</name>
+                    <database>sicad</database>
+                    <model>afastamentos</model>
+                    <key>id</key>
+                    <display>nome</display>
+                    <x>90</x>
+                    <y>10</y>
+                    <width>150</width>
+                    <tip>Escolha um afastamento. É requerido para Gerar e Limpar afastamento. (Requerido para Gerar e Limpar)</tip>
+                </tdbcombo>
+                <tlabel id="4">
+                    <class>TLabel</class>
+                    <name>label_datainicio</name>
+                    <x>10</x>
+                    <y>50</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Dt Inicial</value>
+                </tlabel>
+                <tlabel id="5">
+                    <class>TLabel</class>
+                    <name>label_datafim</name>
+                    <x>10</x>
+                    <y>85</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Dt Final</value>
+                </tlabel>
+                <tdate id="6">
+                    <class>TDate</class>
+                    <name>dtfimaf</name>
+                    <x>75</x>
+                    <y>80</y>
+                    <value></value>
+                    <mask>dd-mm-yyyy</mask>
+                    <width>90</width>
+                    <editable>1</editable>
+                    <tip>Insira a data final do Afastamento. (Requerido para Gerar e Limpar)</tip>
+                    <required></required>
+                </tdate>
+                <tlabel id="7">
+                    <class>TLabel</class>
+                    <name>label_boletim</name>
+                    <x>10</x>
+                    <y>115</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Boletim</value>
+                </tlabel>
+                <tentry id="8">
+                    <class>TEntry</class>
+                    <name>bgaf</name>
+                    <x>75</x>
+                    <y>110</y>
+                    <value></value>
+                    <mask>9999</mask>
+                    <width>80</width>
+                    <maxlen>4</maxlen>
+                    <editable>1</editable>
+                    <tip>Numero do Boletim de publicação. (Requirido para Gerar, opcional para limpar)</tip>
+                    <required></required>
+                </tentry>
+                <tlabel id="9">
+                    <class>TLabel</class>
+                    <name>label_anobg</name>
+                    <x>10</x>
+                    <y>145</y>
+                    <color>#000000</color>
+                    <size>10</size>
+                    <style></style>
+                    <value>Ano BG</value>
+                </tlabel>
+                <tentry id="10">
+                    <class>TEntry</class>
+                    <name>anobgaf</name>
+                    <x>75</x>
+                    <y>140</y>
+                    <value></value>
+                    <mask>9999</mask>
+                    <width>80</width>
+                    <maxlen>4</maxlen>
+                    <editable>1</editable>
+                    <tip>Insira ano do BG . (Requerido para Gerar e Limpar)</tip>
+                    <required></required>
+                </tentry>
+                <tbutton id="11">
+                    <class>TButton</class>
+                    <name>limpaafastamento</name>
+                    <x>70</x>
+                    <y>180</y>
+                    <value>Limpa Afastamento</value>
+                    <icon>ico_delete.png</icon>
+                    <action>onClearAfastamento</action>
+                    <template></template>
+                </tbutton>
+            </tpanel>
+            <tpanel id="4" tab="Verifica">
+                <tbutton id="0">
+                    <class>TButton</class>
+                    <name>verificaEscala</name>
+                    <x>80</x>
+                    <y>20</y>
+                    <value>Verifica Escala</value>
+                    <icon>ico_view.png</icon>
+                    <action>onListaEscala</action>
+                    <template></template>
+                </tbutton>
+            </tpanel>
+        </pages>
+    </tnotebook>
+    <tbutton id="9">
+        <class>TButton</class>
+        <name>retornaListagem</name>
+        <x>555</x>
+        <y>425</y>
+        <value>Retorna Listagem</value>
+        <icon>ico_edit.png</icon>
+        <action>onReturn</action>
+        <template></template>
+    </tbutton>
+</form>

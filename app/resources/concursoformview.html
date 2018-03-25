@@ -1,0 +1,36 @@
+<!--[main]-->
+<div class="tform">
+    <table style="width:640px">
+        <tr class="tformtitle">
+            <td colspan="2"> <label> concurso </label> </td>
+        </tr>
+        <tbody class="formdata">
+
+            <tr class="">
+                <td style="font-weight:bold"  align="right">Nome Certame</td>
+                <td style="padding-left:10px" align="left">{$nome_certame}</td>
+            </tr>
+
+            <tr class="oddrow">
+                <td style="font-weight:bold"  align="right">Doc Legal</td>
+                <td style="padding-left:10px" align="left">{$doc_legal}</td>
+            </tr>
+
+            <tr class="">
+                <td style="font-weight:bold"  align="right">Data Abertura</td>
+                <td style="padding-left:10px" align="left">{$data_abertura}</td>
+            </tr>
+
+
+            <tr class="tformaction">
+                <td colspan="2" align="right">
+                    <a generator="adianti" href="index.php?class=concursoForm&method=onEdit&id={$id}&key={$id}" class="btn btn-default">
+                        <span class="fa fa-pencil-square-o"></span>
+                        Edit
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!--[/main]-->

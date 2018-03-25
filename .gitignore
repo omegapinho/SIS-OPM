@@ -1,0 +1,9 @@
+/nbproject/private/
+/app/config
+/documentos
+/files
+/tmp
+/.git
+.project
+.htaccess
+*.ini
