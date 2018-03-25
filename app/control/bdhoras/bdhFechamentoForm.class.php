@@ -58,7 +58,7 @@ class bdhFechamentoForm extends TPage
                             'Marcando esta opção, fecho também as escalas que a OPM foi informante como no caso dos adidos.');
         
 
-        $lista_opm->setSize(300,300);
+        $lista_opm->setSize(300,300); 
         $selecao->setSize(300,300);
         $fecha_inativo->setSize(80);
         $fecha_OPM->setSize(80);
