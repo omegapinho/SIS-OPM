@@ -570,7 +570,7 @@ class TSisacadFinanceiroReport
                                     $aula->aulas_pagas         = $aula->aulas_pagas - $ch_estorno;
                                 }
                                 //Mudança 2018-03-23, para evitar aulas_pagas menor que zero
-                                if ($aula->aulas_pagas) < 0)
+                                if ($aula->aulas_pagas < 0)
                                 {
                                     $aula->aulas_pagas = 0;
                                 }
