@@ -235,5 +235,70 @@ class aluno extends TRecord
         // returns the associated object
         return '--NC--';//$this->frontpage;
     }    
-
+//------------------------------------------------------------------------------
+//Acrescido em 2018-04-05
+   /**
+     * Method getaluno_presencas
+     */
+    public function getaluno_presencas()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('aluno_id', '=', $this->id));
+        return aluno_presenca::getObjects( $criteria );
+    }
+    
+    
+    /**
+     * Method getavaliacao_alunos
+     */
+    public function getavaliacao_alunos()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('aluno_id', '=', $this->id));
+        return avaliacao_aluno::getObjects( $criteria );
+    }
+    
+    
+    /**
+     * Method getavaliacao_resultadoalunos
+     */
+    public function getavaliacao_resultadoalunos()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('aluno_id', '=', $this->id));
+        return avaliacao_resultadoaluno::getObjects( $criteria );
+    }
+    
+    
+    /**
+     * Method getavaliacao_finalalunos
+     */
+    public function getavaliacao_finalalunos()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('aluno_id', '=', $this->id));
+        return avaliacao_finalaluno::getObjects( $criteria );
+    }
+    
+    
+    /**
+     * Method getavaliacao_rankingalunos
+     */
+    public function getavaliacao_rankingalunos()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('aluno_id', '=', $this->id));
+        return avaliacao_rankingaluno::getObjects( $criteria );
+    }
+    
+    
+    /**
+     * Method getranking_alunos
+     */
+    public function getranking_alunos()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('aluno_id', '=', $this->id));
+        return ranking_aluno::getObjects( $criteria );
+    }
 }//Fim Classe

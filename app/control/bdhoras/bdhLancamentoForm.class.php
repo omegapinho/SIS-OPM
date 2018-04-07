@@ -203,9 +203,9 @@ class bdhLancamentoForm extends TPage
         $ativo->setTip('Se desejar que os militares inativos façam parte da seleção, marque como SIM para seleciona-los.'.
                         '<br>Caso troque esta opção, não haverá a limpeza dos já selecionados.');
         //Ações
-        $change_action = new TAction(array($this, 'onSelectOpm_old'));//Ação de Popular lista de PMs
-        $opm->setChangeAction($change_action);
-        $ativo->setChangeAction($change_action);
+        //$change_action = new TAction(array($this, 'onSelectOpm_old'));//Ação de Popular lista de PMs
+        //$opm->setChangeAction($change_action);
+        //$ativo->setChangeAction($change_action);
         
         //Controle de Nível
         if ($this->nivel_sistema<$this->config[$this->cfg_chg_opm])
@@ -269,13 +269,14 @@ class bdhLancamentoForm extends TPage
         $Action = ($this->nivel_sistema>=$this->config[$this->cfg_cls_esc]) ? new TAction(array($this, 'onLimpaEscala')) : new TAction(array($this, 'NoAcess'));
         $runLmp->setAction($Action);
         $runLmp->setLabel('Limpa Escala');
+        
         //Botão Carrega OPM na Lista da OPM
-        //$runOpm = new TButton('runOpm');
-        //$runOpm->setImage('fa:eye black');
-        //$runOpm->class = 'btn btn-info btn-sm';
-        //$Action = new TAction(array($this, 'onSelectOpm'));
-        //$runOpm->setAction($Action);
-        //$runOpm->setLabel('Carrega OPM');
+        $runOpm = new TButton('runOpm');
+        $runOpm->setImage('fa:retweet');
+        $runOpm->class = 'btn btn-success btn-sm';
+        $Action = new TAction(array($this, 'onSelectOpm_old'));
+        $runOpm->setAction($Action);
+        $runOpm->setLabel('Carrega OPM');
         
         $table = new TTable();
         $table-> border = '0';
@@ -284,7 +285,7 @@ class bdhLancamentoForm extends TPage
 
         //Monta selecionador
         $hbox1 = new THBox;
-        $hbox1->addRowSet( new TLabel('RG:'),$rgmilitar,$addPM,new TLabel('Unidade:'),$opm,new TLabel('Seleciona Inativos?'),$ativo);//,$runOpm );
+        $hbox1->addRowSet( new TLabel('RG:'),$rgmilitar,$addPM,new TLabel('Unidade:'),$opm,new TLabel('Seleciona Inativos?'),$ativo,$runOpm);
         $frame1 = new TFrame;
         $frame1->setLegend('Selecione os PMs ou a OPM');
         $frame1->add($hbox1);
@@ -425,6 +426,11 @@ class bdhLancamentoForm extends TPage
             $runLmp->popside = 'top';
             $runLmp->poptitle = 'Limpa as Escalas e Afastamentos';
             $runLmp->popcontent = 'Limpa Escalas (ordinária e Extra) e Afastamentos dos militares Selecionados e no intervalo de datas';
+            
+            $runOpm->popover = 'true';
+            $runOpm->popside = 'top';
+            $runOpm->poptitle = 'Carrega os militares da Unidade';
+            $runOpm->popcontent = 'Carrega os Militares da unidade escolhida filtrando os ativos e inativos conforme se escolhe Sim ou Não no campo Seleciona inativos:';
         }
         //Tabela com Comandos
         $frame_tempo = new TFrame();
@@ -434,10 +440,10 @@ class bdhLancamentoForm extends TPage
         $hboxc->addRowSet($cls);
         $hboxc->addRowSet($runVer);
         $hboxc->addRowSet($ret);
-        //$frame_tempo->add($hboxc);
-        //$frame_tempo->style = "width: 100%; display: table-cell; vertical-align: top; text-align: center;";
+
         $frame1->add($hboxc);
         $frame1->style = "width: 100%; display: table-cell; vertical-align: top; text-align: center;";
+
         //Frame com Lista da OPM
         $vbox2 = new TVBox;
         $frame4 = new TFrame(260,330);
@@ -469,7 +475,7 @@ class bdhLancamentoForm extends TPage
         $this->form->setFields(array($rgmilitar,$opm,$addPM,$lista_opm,$lista_slc,$opm_info_atual,$opm_id_info,$turno,
                                 $datafinal,$datainicial,$dtinicioaf,$dtfimaf,$horaIncialOrdinario,$horaInicioExtra,$horasTrabalhadas,
                                 $diasExtra,$mesExtra,$anoExtra,$bgaf,$anobgaf,$tipoExtra,$afasta_id,$ativo,
-                                $add,$del,$cls,$ret,$runOrd,$runExt,$runAfa,$runCls,$runVer,$runLmp));        
+                                $add,$del,$cls,$ret,$runOrd,$runExt,$runAfa,$runCls,$runVer,$runLmp,$runOpm));        
         // vertical box container
         $container = new TVBox;
         $container->style = 'width: 90%';
@@ -935,6 +941,7 @@ class bdhLancamentoForm extends TPage
             if ($key != "XX")
             {
                 TTransaction::open('sicad'); // open a transaction
+                TTransaction::setLogger(new TLoggerTXT('tmp/efetivo.txt')); 
                 $sql = "SELECT DISTINCT servidor.rgmilitar AS rgmilitar, ". 
                                 "'[postograd] ' || servidor.rgmilitar || ' ' || servidor.nome AS nome, ".
                                 "item.ordem, item.id AS postograd_id ".
@@ -945,21 +952,31 @@ class bdhLancamentoForm extends TPage
                     $sql .= "AND status = 'ATIVO' "; 
                 }
                 $sql .="ORDER BY item.ordem, nome ASC;";
+                TTransaction::log($sql);
                 $conn = TTransaction::get();
                 $res = $conn->prepare($sql);
                 $res->execute();
                 $militares = $res->fetchAll();
                 TTransaction::close(); // close the transaction
-                //var_dump($militares);
                 $lista = array();
                 $cara = $ci->caracteristicas_SICAD('postograd_sigla');
+                //var_dump($cara);
                 foreach ($militares as $militar)
                 {
                     $postograd = '';
+                    //var_dump($militar);
                     if (array_key_exists('postograd_id',$militar) && $militar['postograd_id'] != null)
                     {
-                        $postograd = $cara[$militar['postograd_id']];
+                        if (array_key_exists($militar['postograd_id'],$cara))
+                        {
+                            $postograd = $cara[$militar['postograd_id']];
+                        }
+                        else
+                        {
+                            $postograd = 'NC';
+                        }
                     }
+                    $militar['nome'] = str_replace("'","`",$militar['nome']);
                     $lista[$militar['rgmilitar']] = str_replace('[postograd]',$postograd . ' RG ',$militar['nome']);
                 }
             }
@@ -974,6 +991,7 @@ class bdhLancamentoForm extends TPage
         catch (Exception $e) // in case of exception 
         {
             new TMessage('error', $e->getMessage()); // shows the exception error message
+            var_dump($militar);
             TTransaction::rollback(); // undo all pending operations            
         }
 

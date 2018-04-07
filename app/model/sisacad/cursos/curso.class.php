@@ -15,6 +15,8 @@ class curso extends TRecord
     private $materias_previstass;    //Associação
     
     private $turmas;                 //Composição
+    private $avaliacao_cursos;       //Adicionado em 2018-04-05
+    
 
     /**
      * Constructor method
@@ -221,6 +223,27 @@ class curso extends TRecord
         // delete the object itself
         parent::delete($id);
     }
+//------------------------------------------------------------------------------
+//Adicionado em 2018-04-05
+    /**
+     * Method getavaliacao_cursos
+     * Return the curso' avaliacao_curso's
+     * @return Collection of avaliacao_curso
+     */
+    public function getavaliacao_cursos()
+    {
+        return $this->avaliacao_cursos;
+    }
 
+    
+    /**
+     * Method getrankings
+     */
+    public function getrankings()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('curso_id', '=', $this->id));
+        return ranking::getObjects( $criteria );
+    }
 
 }

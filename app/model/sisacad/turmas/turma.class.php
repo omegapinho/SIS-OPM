@@ -227,6 +227,39 @@ class turma extends TRecord
         // delete the object itself
         parent::delete($id);
     }
+//------------------------------------------------------------------------------
+//Adicionado em 2018-04-05
+    /**
+     * Method getdocumentos_turmas
+     */
+    public function getdocumentos_turmas()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('turma_id', '=', $this->id));
+        return documentos_turma::getObjects( $criteria );
+    }
+    
+    
+    /**
+     * Method getavaliacao_turmas
+     */
+    public function getavaliacao_turmas()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('turma_id', '=', $this->id));
+        return avaliacao_turma::getObjects( $criteria );
+    }
+    
+    
+    /**
+     * Method getavaliacao_rankings
+     */
+    public function getavaliacao_rankings()
+    {
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('turma_id', '=', $this->id));
+        return avaliacao_ranking::getObjects( $criteria );
+    }
 
 
 }
