@@ -61,60 +61,142 @@ class turmaList extends TPage
         $criteria = new TCriteria();
         $criteria->add (new TFilter ('oculto','!=','S'));
         
-        $curso_id = new TDBCombo('curso_id','sisacad','curso','id','nome','nome',$criteria);
-        $nome = new TEntry('nome');
-        $sigla = new TEntry('sigla');
+        $curso_id   = new TDBCombo('curso_id','sisacad','curso','id','nome','nome',$criteria);
+        $nome       = new TEntry('nome');
+        $sigla      = new TEntry('sigla');
         
-        $criteria = new TCriteria();
+        $criteria   = new TCriteria();
         $criteria->add (new TFilter ('uf','=','GO'));
-        $cidade = new TDBCombo('cidade','sicad','cidades','nome','nome','nome',$criteria);
-        $opm_id = new TDBCombo('opm_id','sisacad','OPM','id','nome','nome');
+        
+        $cidade     = new TDBCombo('cidade','sicad','cidades','nome','nome','nome',$criteria);
+        $opm_id     = new TDBCombo('opm_id','sisacad','OPM','id','nome','nome');
         $tipo_turma = new TCombo('tipo_turma');
-        $oculto = new TCombo('oculto');
+        $oculto     = new TCombo('oculto');
         
         //Valores
         $oculto->addItems($fer->lista_sim_nao());
         $tipo_turma->addItems($fer->lista_tipos_curso());
+        //Tamanhos
+        $curso_id->setSize(480);
+        $nome->setSize(300);
+        $sigla->setSize(150);
+        $cidade->setSize(240);
+        $opm_id->setSize(500);
+        $tipo_turma->setSize(150);
+        $oculto->setSize(50);
 
         // add the fields
-        $this->form->addQuickField('Curso Vinculado', $curso_id,  400 );
-        $this->form->addQuickField('Nome da Turma', $nome,  400 );
-        $this->form->addQuickField('Sigla', $sigla,  200 );
-        $this->form->addQuickField('Cidade Sede', $cidade,  400 );
-        $this->form->addQuickField('OPM Responsável', $opm_id,  400 );
-        $this->form->addQuickField('Tipo de Turma', $tipo_turma,  400 );
-        $this->form->addQuickField('Encerrada?', $oculto,  120 );
-        
+        $table = new TTable();
+        $table->addRowSet(array(new TLabel('Curso Vinculado'),$curso_id));
+        $table->addRowSet(array(new TLabel('Nome da Turma'),$nome,new TLabel('Sigla'),$sigla));
+        $table->addRowSet(array(new TLabel('Cidade Sede'),$cidade,new TLabel('Tipo Turma'),$tipo_turma,new TLabel('Encerrada?'),$oculto));
+        $table->addRowSet(array(new TLabel('OPM Responsável'),$opm_id));
+        //Cria Frame
+        $frame = new TFrame();
+        $frame->setLegend('Filtros');
+        $frame->add($table);
+        $this->form->add($frame);
+        //Inclui os campos para uso do formulário
+        $this->form->addField($curso_id);
+        $this->form->addField($nome);
+        $this->form->addField($sigla);
+        $this->form->addField($cidade);
+        $this->form->addField($opm_id);
+        $this->form->addField($tipo_turma);
+        $this->form->addField($oculto);
+        //Botões
+        // add the search form actions
+        $onSearch = new TButton('onSearch');
+        $onSearch->setLabel(_t('Find'));
+        $onSearch->setImage('fa:search');
+        $onSearch->class = 'btn btn-info btn-lg';
+        $onSearch->popover = 'true';
+        $onSearch->popside = 'bottom';
+        $onSearch->poptitle = 'Busca';
+        $onSearch->popcontent = 'Busca os Turmas que atendam aos filtros';
+        $onSearch->setAction(new TAction(array($this, 'onSearch')));
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue('turma_filter_data') );
+        $frame->add($onSearch);
+        $this->form->addField($onSearch);
         
-        // add the search form actions
-        $this->form->addQuickAction(_t('Find')      , new TAction(array($this, 'onSearch')), 'fa:search');
         if ($this->nivel_sistema>80)
         {
-            $this->form->addQuickAction(_t('New')            ,  new TAction(array('turmaForm', 'onEdit')), 'bs:plus-sign green');
-            $this->form->addQuickAction('abre Matrícula'     ,  new TAction(array('turmasmatriculandoList', 'onReload')), 'fa:user-plus red');
-            $this->form->addQuickAction('Atribui Turma a OPM',  new TAction(array('turmaOPMList', 'onReload')), 'fa:sitemap blue');
+            $onNew = new TButton('onNew');
+            $onNew->setLabel(_t('New'));
+            $onNew->setImage('fa:plus-square green');
+            $onNew->class = 'btn btn-info btn-lg';
+            $onNew->popover = 'true';
+            $onNew->popside = 'bottom';
+            $onNew->poptitle = 'Nova Turma';
+            $onNew->popcontent = 'Cadastra um nova Turma para o Curso';
+            $onNew->setAction(new TAction(array('turmaForm', 'onEdit')));
+            $frame->add($onNew);
+            $this->form->addField($onNew);
+            
+            $onMat = new TButton('onMat');
+            $onMat->setLabel('abre Matricula');
+            $onMat->setImage('fa:user-plus red');
+            $onMat->class = 'btn btn-info btn-lg';
+            $onMat->popover = 'true';
+            $onMat->popside = 'bottom';
+            $onMat->poptitle = 'Abre a Matrícula';
+            $onMat->popcontent = 'Libera o Cadastro de alunos na turma';
+            $onMat->setAction(new TAction(array('turmasmatriculandoList', 'onReload')));
+            $frame->add($onMat);
+            $this->form->addField($onMat);
+            
+            $onOPM = new TButton('onOPM');
+            $onOPM->setLabel('Vincula Turma a OPM');
+            $onOPM->setImage('fa:sitemap darkgray');
+            $onOPM->class = 'btn btn-info btn-lg';
+            $onOPM->popover = 'true';
+            $onOPM->popside = 'bottom';
+            $onOPM->poptitle = 'Vincula a Turma a OPM';
+            $onOPM->popcontent = 'Cria um vínculo da turma com outroas OPMs';
+            $onOPM->setAction(new TAction(array('turmaOPMList', 'onReload')));
+            $frame->add($onOPM);
+            $this->form->addField($onOPM);
         }
-        $this->form->addQuickAction('Ver Progresso' ,  new TAction(array($this,'onProgresso')), 'fa:bar-chart black');
-        $this->form->addQuickAction('Aplicação de Provas'    ,  new TAction(array('avaliacao_turmaList','onReload')), 'fa:bookmark red');
+        $onPgs = new TButton('onPgs');
+        $onPgs->setLabel('Ver o Progresso');
+        $onPgs->setImage('fa:bar-chart black');
+        $onPgs->class = 'btn btn-info btn-lg';
+        $onPgs->popover = 'true';
+        $onPgs->popside = 'bottom';
+        $onPgs->poptitle = 'Ver Gráfico de Progresso das Turmas';
+        $onPgs->popcontent = 'Abre a tela para verificar o progresso das Matérias';
+        $onPgs->setAction(new TAction(array($this, 'onProgresso')));
+        $frame->add($onPgs);
+        $this->form->addField($onPgs);
+        //$this->form->addQuickAction('Ver Progresso' ,  new TAction(array($this,'onProgresso')), 'fa:bar-chart black');
         
+        $onPrv = new TButton('onPrv');
+        $onPrv->setLabel('Aplicação de Provas');
+        $onPrv->setImage('fa:bookmark red');
+        $onPrv->class = 'btn btn-info btn-lg';
+        $onPrv->popover = 'true';
+        $onPrv->popside = 'bottom';
+        $onPrv->poptitle = 'Aplicação de Provas';
+        $onPrv->popcontent = 'Abre Gerenciamento das avaliações da turma';
+        $onPrv->setAction(new TAction(array('avaliacao_turmaList', 'onReload')));
+        $frame->add($onPrv);
+        $this->form->addField($onPrv);
+        //$this->form->addQuickAction('Aplicação de Provas'    ,  new TAction(array('avaliacao_turmaList','onReload')), 'fa:bookmark red');        
+
         // creates a Datagrid
         $this->datagrid = new TDataGrid;
-        
         $this->datagrid->style = 'width: 100%';
-        //$this->datagrid->datatable = 'true';
-        // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
 
         // creates the datagrid columns
-        $column_check = new TDataGridColumn('check', '', 'center');
-        $column_curso_id = new TDataGridColumn('curso_id', 'Curso Vinculado', 'center');
-        $column_nome = new TDataGridColumn('nome', 'Nome da Turma', 'center');
-        $column_sigla = new TDataGridColumn('sigla', 'Sigla', 'center');
-        $column_cidade = new TDataGridColumn('cidade', 'Cidade Sede', 'center');
-        $column_opm_id = new TDataGridColumn('opm_id', 'OPM', 'center');
+        $column_check      = new TDataGridColumn('check', '', 'center');
+        $column_curso_id   = new TDataGridColumn('curso_id', 'Curso Vinculado', 'center');
+        $column_nome       = new TDataGridColumn('nome', 'Nome da Turma', 'center');
+        $column_sigla      = new TDataGridColumn('sigla', 'Sigla', 'center');
+        $column_cidade     = new TDataGridColumn('cidade', 'Cidade Sede', 'center');
+        $column_opm_id     = new TDataGridColumn('opm_id', 'OPM', 'center');
         $column_tipo_turma = new TDataGridColumn('tipo_turma', 'Tipo de Turma', 'center');
-        $column_oculto = new TDataGridColumn('oculto', 'Encerrada?', 'center');
+        $column_oculto     = new TDataGridColumn('oculto', 'Encerrada?', 'center');
 
         // add the columns to the DataGrid
         $this->datagrid->addColumn($column_check);
@@ -602,7 +684,7 @@ class turmaList extends TPage
     {
         $criteria = new TCriteria();
 
-        if ($this->nivel_sistema<=80)//Gestores e/Operadores
+        if ($this->nivel_sistema<=80)//Gestores e/Operadores - Turmas que gerencia apenas
         {
             $query1 = "(SELECT DISTINCT id FROM sisacad.turma WHERE opm_id IN (".$this->listas['valores']."))";
             $criteria->add (new TFilter ('id','IN',$query1), TExpression::OR_OPERATOR);
@@ -613,15 +695,8 @@ class turmaList extends TPage
 
         $turma_id = new TDBCombo('turma_id','sisacad','turma','id','nome','nome',$criteria);
         
-        //var_dump($param);
-        
         //Tamanho
         $turma_id->setSize(300);
-        
-        //Mascaras
-
-        //Trava
-        //$id->setEditable(false);
         
         $form = new TForm('input_form');
         $form->style = 'padding:20px';
@@ -645,44 +720,51 @@ class turmaList extends TPage
     public function Progresso ($param)
     {
 
-        //var_dump($param);
-        $html = new THtmlRenderer('app/resources/google_bar_chart.html');
-        $dados = $this->getDadosTurma($param);
-        $legenda = array();
-        $eixo    = array();
-        
-        if (!empty($dados))
-        {
-            $legenda[] = 'Disciplinas';
-            $eixo[]    = 'Carga Horária em Percentual';
-            foreach ($dados as $dado)
+        if (is_array($param) && array_key_exists('turma_id',$param) && $param['turma_id'] != null)
+        { 
+            $html = new THtmlRenderer('app/resources/google_bar_chart.html');
+            $dados = $this->getDadosTurma($param);
+            $legenda = array();
+            $eixo    = array();
+            
+            if (!empty($dados))
             {
-                $legenda[] = $dado->disciplina_id;
-                $eixo[]    = $dado->carga_percent;
+                $legenda[] = 'Disciplinas';
+                $eixo[]    = 'Carga Horária em Percentual';
+                foreach ($dados as $dado)
+                {
+                    $legenda[] = $dado->disciplina_id;
+                    $eixo[]    = $dado->carga_percent;
+                }
             }
+            
+            $data = array();
+            $data[] = $legenda;
+            $data[] = $eixo;
+           
+            $panel = new TPanelGroup('Gráfico de Colunas da Turma ' . $dados[0]->turma_nome );
+            $panel->add($html);
+            
+            // replace the main section variables
+            $html->enableSection('main', array('data'   => json_encode($data),
+                                               'width'  => '100%',
+                                               'height'  => '300px',
+                                               'title'  => 'Progresso Percentual das disciplinas',
+                                               'ytitle' => 'Percentual', 
+                                               'xtitle' => 'Disciplinas'));
+            
+           
+            // show the input dialog
+            
+            $window = TWindow::create('Gráfico do Progresso de turma', 0.8, 0.8);
+            $window->add($panel);
+            $window->show();
+        }
+        else
+        {
+            new TMessage('error','Precisa escolher uma das turmas disponíveis');
         }
         
-        $data = array();
-        $data[] = $legenda;
-        $data[] = $eixo;
-       
-        $panel = new TPanelGroup('Gráfico de Colunas da Turma ' . $dados[0]->turma_nome );
-        $panel->add($html);
-        
-        // replace the main section variables
-        $html->enableSection('main', array('data'   => json_encode($data),
-                                           'width'  => '100%',
-                                           'height'  => '300px',
-                                           'title'  => 'Progresso Percentual das disciplinas',
-                                           'ytitle' => 'Percentual', 
-                                           'xtitle' => 'Disciplinas'));
-        
-       
-        // show the input dialog
-        
-        $window = TWindow::create('Gráfico do Progresso de turma', 0.8, 0.8);
-        $window->add($panel);
-        $window->show();
 
     }//Fim  Módulo
 /*------------------------------------------------------------------------------
@@ -692,10 +774,10 @@ class turmaList extends TPage
     {
         try
         {
-            $lista = false;
-            $fer = new TFerramentas();
-            $ci  = new TSicadDados();
-            $acad = new TSisacad();
+            $lista   = false;
+            $fer     = new TFerramentas();
+            $ci      = new TSicadDados();
+            $acad    = new TSisacad();
             $profile = TSession::getValue('profile');           //Profile da Conta do usuário
             
             // open a transaction with database 'sisacad'

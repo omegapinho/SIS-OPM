@@ -22,7 +22,12 @@ class ranking_aluno extends TRecord
         parent::addAttribute('nota');
         parent::addAttribute('posicao');
         parent::addAttribute('ranking_id');
-        parent::addAttribute('aluno_id');
+        //parent::addAttribute('aluno_id');//Removido em 2018-04-12
+        //Adicionados em 2018-04-12
+        parent::addAttribute('cpf');
+        parent::addAttribute('recuperado');
+        parent::addAttribute('reprovado');
+        parent::addAttribute('turma_id');
     }
 
     

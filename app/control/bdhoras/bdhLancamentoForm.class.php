@@ -1218,7 +1218,7 @@ class bdhLancamentoForm extends TPage
     //var_dump($param);
     }//Fim Módulo
 /*---------------------------------------------------------------------------------------
- *                   Apaga Afastamentos
+ *                   Muda a OPM da lista de selecionados
  *---------------------------------------------------------------------------------------*/
     public function onChangeOPM($lista_opm,$new_opm)
      {

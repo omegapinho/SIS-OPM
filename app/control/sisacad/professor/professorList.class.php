@@ -1,7 +1,7 @@
 <?php
 /**
  * professorList Listing
- * @author  <your name here>
+ * @author  Fernando de Pinho Araújo
  */
 class professorList extends TPage
 {
@@ -58,24 +58,52 @@ class professorList extends TPage
 
 
         // create the form fields
-        $id = new TEntry('id');
-        $nome = new TEntry('nome');
-
-        $criteria = new TCriteria;
+        $id              = new TEntry('id');
+        $nome            = new TEntry('nome');
+        
+        //Critérios para Órgãos de origem
+        $criteria        = new TCriteria;
         $criteria->add (new TFilter ('oculto','!=','S'));
-        $orgao_origem = new TDBCombo('orgaosorigem_id','sisacad','orgaosorigem','id','nome','nome',$criteria);
+        $orgao_origem    = new TDBCombo('orgaosorigem_id','sisacad','orgaosorigem','id','nome','nome',$criteria);
         
-        $rg           = new TEntry('rg');
-        $postograd    = new TDBCombo('postograd_id','sisacad','postograd','id','nome','nome',$criteria);
-
-
+        $rg              = new TEntry('rg');
+        $postograd       = new TDBCombo('postograd_id','sisacad','postograd','id','nome','nome',$criteria);
         $data_nascimento = new TDate('data_nascimento');
-        $sexo = new TCombo('sexo');
-        $oculto = new TCombo('oculto');
-        $titulos = new TCombo('titulos');
-        $minha_opm = new TCombo('minha_opm');
+        $sexo            = new TCombo('sexo');
+        $oculto          = new TCombo('oculto');
+        $titulos         = new TCombo('titulos');
+        $minha_opm       = new TCombo('minha_opm');
         
-        $criteria = new TCriteria();
+        //Critérios para Curso
+        $criteria        = new TCriteria();
+        if ($this->nivel_sistema<=80)//Lista as disciplinas somente da unidade dos Gestores e/Operadores
+        {
+            $query1 = "(SELECT DISTINCT id FROM sisacad.turma WHERE opm_id IN (".$this->listas['valores']."))";
+            $query2 = "(SELECT DISTINCT turma_id FROM sisacad.turmaopm WHERE opm_id IN (".$this->listas['valores']."))";
+            
+            $query3 = "(SELECT DISTINCT curso_id FROM sisacad.turma WHERE id IN " . $query1 . 
+                        " OR id IN " . $query2 . " )";
+            //$query4 = "(SELECT DISTINCT disciplina_id FROM sisacad.materias_previstas WHERE curso_id IN " . $query3 . ")";
+            $criteria->add (new TFilter ('id','IN',$query3));
+        }
+        $curso           = new TDBCombo('curso','sisacad','curso','id','nome','nome',$criteria);
+        
+        //Critérios para Turma
+        $criteria        = new TCriteria();
+        if ($this->nivel_sistema<=80)//Lista as disciplinas somente da unidade dos Gestores e/Operadores
+        {
+            $query1 = "(SELECT DISTINCT id FROM sisacad.turma WHERE opm_id IN (".$this->listas['valores']."))";
+            $query2 = "(SELECT DISTINCT turma_id FROM sisacad.turmaopm WHERE opm_id IN (".$this->listas['valores']."))";
+            
+            $query3 = "(SELECT DISTINCT id FROM sisacad.turma WHERE id IN " . $query1 . 
+                        " OR id IN " . $query2 . " )";
+            //$query4 = "(SELECT DISTINCT disciplina_id FROM sisacad.materias_previstas WHERE curso_id IN " . $query3 . ")";
+            $criteria->add (new TFilter ('id','IN',$query3));
+        }        
+        $turma           = new TDBCombo('turma','sisacad','turma','id','nome','nome',$criteria);
+        
+        //Critérios para Disciplina
+        $criteria        = new TCriteria();
         if ($this->nivel_sistema<=80)//Lista as disciplinas somente da unidade dos Gestores e/Operadores
         {
             $query1 = "(SELECT DISTINCT id FROM sisacad.turma WHERE opm_id IN (".$this->listas['valores']."))";
@@ -87,7 +115,7 @@ class professorList extends TPage
             $criteria->add (new TFilter ('id','IN',$query4));
         }
         $criteria->add (new TFilter ('oculto','!=','S'));
-        $disciplina_id = new TDBCombo('disciplina_id','sisacad','disciplina','id','nome','nome',$criteria);
+        $disciplina_id   = new TDBCombo('disciplina_id','sisacad','disciplina','id','nome','nome',$criteria);
 
         //Tamanhos
         $id->setSize(50);
@@ -101,6 +129,8 @@ class professorList extends TPage
         $disciplina_id->setSize(400);
         $titulos->setSize(80);
         $minha_opm->setSize(80);
+        $curso->setSize(400);
+        $turma->setSize(200);
         
         //Valores
         $sexo->addItems($fer->lista_sexo());
@@ -124,6 +154,7 @@ class professorList extends TPage
         $table->addRowSet(array(new TLabel('D.N.'),$data_nascimento,new TLabel('Sexo'),$sexo));
         $table->addRowSet(array(new TLabel('Inativo?'),$oculto,new TLabel('Lista só quem tem Título(s)'),$titulos, 
                                 new TLabel('Somente quem gerencio?'),$minha_opm));
+        $table->addRowSet(array(new TLabel('Curso'),$curso,new TLabel('Turma'),$turma));
         $table->addRowSet(array(new TLabel('Disciplina'),$disciplina_id));
         
         $frame = new TFrame();
@@ -142,6 +173,8 @@ class professorList extends TPage
         $this->form->addField($titulos);
         $this->form->addField($minha_opm);
         $this->form->addField($disciplina_id);
+        $this->form->addField($curso);
+        $this->form->addField($turma);
         
         //Botões        
         $onSearch = new TButton('onSearch');
@@ -164,13 +197,13 @@ class professorList extends TPage
         $onNew->popcontent = 'Cadastra um novo professor';
         $onNew->setAction(new TAction(array('professorForm', 'onEdit')));     
         
-        $onPrt = new TButton('onPrt');
-        $onPrt->setLabel(_t('New'));
+        $onPrt             = new TButton('onPrt');
+        $onPrt->setLabel('Imprime Professores');
         $onPrt->setImage('bs:print black');
-        $onPrt->class = 'btn btn-info btn-lg';
-        $onPrt->popover = 'true';
-        $onPrt->popside = 'bottom';
-        $onPrt->poptitle = 'Imprime Listagem de professores';
+        $onPrt->class      = 'btn btn-info btn-lg';
+        $onPrt->popover    = 'true';
+        $onPrt->popside    = 'bottom';
+        $onPrt->poptitle   = 'Imprime Listagem de professores';
         $onPrt->popcontent = 'Imprime uma listagem dos professores com base no(s) filtro(s) atual(is).';
         $onPrt->setAction(new TAction(array($this, 'onImprime')));  
         
@@ -474,6 +507,11 @@ class professorList extends TPage
         TSession::setValue('professorList_filter_titulos',   NULL);
         TSession::setValue('professorList_filter_minha_opm',   NULL);
         TSession::setValue('professorList_filter_disciplina_id',   NULL);
+        TSession::setValue('professorList_filter_curso',   NULL);
+        TSession::setValue('professorList_filter_turma',   NULL);
+        TSession::setValue('professorList_filter_dado_disciplina_id',   NULL);
+        TSession::setValue('professorList_filter_dado_curso',   NULL);
+        TSession::setValue('professorList_filter_dado_turma',   NULL);
 
 
         if (isset($data->id) AND ($data->id)) {
@@ -556,18 +594,37 @@ class professorList extends TPage
             }
             TSession::setValue('professorList_filter_minha_opm',   $filter); // stores the filter in the session
         }
-        
+
+        if (isset($data->curso) AND ($data->curso)) 
+        {
+            $sql1 = "(SELECT id FROM sisacad.turma WHERE curso_id = " . $data->curso . ")";
+            $sql2 = "(SELECT id FROM sisacad.materia WHERE turma_id IN " . $sql1 . ")";
+            $sql3 = "(SELECT professor_id FROM sisacad.professormateria WHERE materia_id IN " . $sql2 . " )";
+            $filter = new TFilter('id', 'IN', $sql3); // create the filter   
+            TSession::setValue('professorList_filter_curso',   $filter); // stores the filter in the session
+            TSession::setValue('professorList_filter_dado_curso',   $data->curso); // stores the filter in the session
+            
+        }
+
+        if (isset($data->turma) AND ($data->turma)) 
+        {
+            $sql1 = "(SELECT id FROM sisacad.materia WHERE turma_id = " . $data->turma . ")";
+            $sql2 = "(SELECT professor_id FROM sisacad.professormateria WHERE materia_id IN " . $sql1 . " )";
+            $filter = new TFilter('id', 'IN', $sql2); // create the filter   
+            TSession::setValue('professorList_filter_turma',   $filter); // stores the filter in the session
+            TSession::setValue('professorList_filter_dado_turma',   $data->turma); // stores the filter in the session
+        }
+
         if (isset($data->disciplina_id) AND ($data->disciplina_id)) 
         {
             $sql1 = "(SELECT id FROM sisacad.materia WHERE disciplina_id = " . $data->disciplina_id . ")";
             $sql2 = "(SELECT professor_id FROM sisacad.professormateria WHERE materia_id IN " . $sql1 . " )";
             $filter = new TFilter('id', 'IN', $sql2); // create the filter   
             TSession::setValue('professorList_filter_disciplina_id',   $filter); // stores the filter in the session
+            TSession::setValue('professorList_filter_dado_disciplina_id',   $data->disciplina_id); // stores the filter in the session
             
         }
 
-
-        
         // fill the form with data again
         $this->form->setData($data);
         
@@ -651,9 +708,18 @@ class professorList extends TPage
                 $criteria->add(TSession::getValue('professorList_filter_minha_opm')); // add the session filter
             }
             
+            if (TSession::getValue('professorList_filter_curso')) {
+                $criteria->add(TSession::getValue('professorList_filter_curso')); // add the session filter
+            }
+            
+            if (TSession::getValue('professorList_filter_turma')) {
+                $criteria->add(TSession::getValue('professorList_filter_turma')); // add the session filter
+            }
+            
             if (TSession::getValue('professorList_filter_disciplina_id')) {
                 $criteria->add(TSession::getValue('professorList_filter_disciplina_id')); // add the session filter
-            }  
+            }
+            
             //var_dump($criteria->dump());
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
@@ -1518,10 +1584,10 @@ class professorList extends TPage
         {
             // open a transaction with database 'sisacad'
             TTransaction::open('sisacad');
+            TTransaction::setLogger(new TLoggerTXT('tmp/imprimeProfessorDisciplina.txt'));
             
             // creates a repository for professor
             $repository = new TRepository('professor');
-            $limit = 10;
             // creates a criteria
             $criteria = new TCriteria;
             
@@ -1532,11 +1598,8 @@ class professorList extends TPage
                 $param['direction'] = 'asc';
             }
             $criteria->setProperties($param); // order, offset
-            //$criteria->setProperty('limit', $limit);
             
             //Monta Critérios para escolhas dos professores conforme opms
-            //echo $this->nivel_sistema.'---'.$this->opm_operador;
-            
             if (TSession::getValue('professorList_filter_id')) {
                 $criteria->add(TSession::getValue('professorList_filter_id')); // add the session filter
             }
@@ -1580,13 +1643,20 @@ class professorList extends TPage
                 $criteria->add(TSession::getValue('professorList_filter_minha_opm')); // add the session filter
             }
             
+            if (TSession::getValue('professorList_filter_curso')) {
+                $criteria->add(TSession::getValue('professorList_filter_curso')); // add the session filter
+            }
+            
+            if (TSession::getValue('professorList_filter_turma')) {
+                $criteria->add(TSession::getValue('professorList_filter_turma')); // add the session filter
+            }
+            
             if (TSession::getValue('professorList_filter_disciplina_id')) {
                 $criteria->add(TSession::getValue('professorList_filter_disciplina_id')); // add the session filter
             }
             
-            //var_dump($criteria->dump());
             // load the objects according to criteria
-            $objects    = $repository->load($criteria, FALSE);
+            $objects    = $repository->load($criteria, FALSE);//Professores
             $tabela = null;
             $cabecalho = '';
             if ($objects)
@@ -1604,7 +1674,7 @@ class professorList extends TPage
                     //Monta Relatório de professores listados com interesses, títulos e turmas designados
                     case 'TURMA/INTERESSE':
                         $cabecalho = '<h4>Listagem Por Contato, Titulos, Intereses e Turmas</h4>';
-                        $head = array('Identificação','Contato/Endereço','Titularidade','Áreas de Atuação','Turmas Designadas');
+                        $head = array('Identificação','Contato/Endereço','Titularidade','Áreas de Atuação','Turmas-//-Disciplina Designadas');
                         foreach ($objects as $object)
                         {
                             $dado = array();
@@ -1665,19 +1735,54 @@ class professorList extends TPage
                             }
                             $dado['interesses'] = $fer->geraListaHTML($lista_d,array('lst'=>'"list-style-type: disc;"'));
                             
-                            //Formata dados de turmas
-                            $turmas = professormateria::where('professor_id','=',$object->id)->load(); 
+                            //Formata dados de turmas conforme critérios de filtro
+                            $repository = new TRepository('professormateria');
+                            // creates a criteria
+                            $criteria = new TCriteria;
+                            $criteria->add(new TFilter('professor_id','=',$object->id));
+                            //Filtra por curso
+                            if (TSession::getValue('professorList_filter_dado_curso')) 
+                            {
+                                $curso  = TSession::getValue('professorList_filter_dado_curso');
+                                $sql1   = "(SELECT id FROM sisacad.turma WHERE curso_id = " . $curso . ")";
+                                $sql2   = "(SELECT id FROM sisacad.materia WHERE turma_id IN " . $sql1 . ")";
+                                $sql3   = "(SELECT id FROM sisacad.professormateria WHERE materia_id IN " . $sql2 . " )";
+                                //echo $sql3;
+                                $filter = new TFilter('id', 'IN', $sql3); // create the filter   
+                                $criteria->add($filter); // add the session filter
+                            }
+                            //Filtra por turma
+                            if (TSession::getValue('professorList_filter_dado_turma')) 
+                            {
+                                $turma  = TSession::getValue('professorList_filter_dado_turma');
+                                $sql1   = "(SELECT id FROM sisacad.materia WHERE turma_id = " . $turma . ")";
+                                $sql2   = "(SELECT id FROM sisacad.professormateria WHERE materia_id IN " . $sql2 . " )";
+                                //echo '<br>' . $sql2;
+                                $filter = new TFilter('id', 'IN', $sql2); // create the filter   
+                                $criteria->add($filter); // add the session filter
+                            }
+                            //Filtra por disciplina
+                            if (TSession::getValue('professorList_filter_dado_disciplina_id')) 
+                            {
+                                $disciplina_id  = TSession::getValue('professorList_filter_dado_disciplina_id');
+                                $sql1           = "(SELECT id FROM sisacad.materia WHERE disciplina_id = " . $disciplina_id . ")";
+                                $sql2           = "(SELECT id FROM sisacad.professormateria WHERE materia_id IN " . $sql1 . " )";
+                                //echo '<br>' . $sql2;
+                                $filter         = new TFilter('id', 'IN', $sql2); // create the filter   
+                                $criteria->add($filter); // add the session filter
+                            }
+
+                            $turmas  = $repository->load($criteria, FALSE);//turmas 
                             $lista_d = array();
                             if (count($interesses)>0)
                             {
         
                                 foreach ($turmas as $turma)
                                 {
-                                    //var_dump($turma);
-                                    $t_disciplina = $turma->materia->nome;
+                                    $t_disciplina = $turma->materia->disciplina->nome;
                                     $t_turma      = $turma->materia->turma->sigla;
-                                    $turma_info   = $t_turma . ' - ' . $t_disciplina; 
-                                    $lista_d[] = $turma_info;
+                                    $turma_info   = $t_turma . '-//-' . $t_disciplina; 
+                                    $lista_d[]    = $turma_info;
                                 }
                             }
                             else

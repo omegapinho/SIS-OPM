@@ -142,10 +142,28 @@ class professor extends TRecord
      * Method getmaterias
      * Return the professor' materia's
      * @return Collection of materia
+     * @$param = TFilter ou um array(TFilter);
      */
-    public function getmaterias()
+    public function getmaterias($param = null)
     {
-        return $this->materias;
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('professor_id', '=', $this->id));
+        if (!empty($param))
+        {
+            if (is_array($param))
+            {
+                foreach ($param as $p)
+                {
+                    $criteria->add($p);
+                }
+            }
+            else
+            {
+                $criteria->add($param);
+            }
+        }
+        
+        return professormateria::getObjects( $criteria );
     }
     
     /**
@@ -246,7 +264,7 @@ class professor extends TRecord
      * Load the object and its aggregates
      * @param $id object ID
      */
-    public function load($id)
+    /*public function load($id)
     {
     
         //$this->postograd = new postograd($this->postograd_id);
@@ -301,7 +319,7 @@ class professor extends TRecord
     
         // load the object itself
         return parent::load($id);
-    }
+    }*/
 
     /**
      * Store the object and its aggregates
@@ -644,6 +662,32 @@ class professor extends TRecord
         //
         // returns the associated object
         return '--NC--';//$this->frontpage;
+    }
+/*------------------------------------------------------------------------------
+ *   Gera o Identificador do Professor dado pelo retorno
+ ²   @$param = 'PNCO'
+ *   @P = posto / N = nome / C = cpf e O = órgão
+ *   @Pode omitir item, mas não pode trocar a ordem 'PNCO'
+ *------------------------------------------------------------------------------*/
+    public function getidentificacao ($param = '!P!N!C!O')
+    {
+        $nome  = $this->nome;
+        if (empty($this->postograd))    self::get_postograd();
+        if (empty($this->orgaosorigem)) self::get_orgaosorigem();
+        $posto = $this->postograd->sigla;
+        $orgao = $this->orgaosorigem->sigla;
+        $cpf   = $this->cpf;
+        
+        $nome   = (!empty($nome))  ? $nome             : '- ERRO NA IDENTIFICAÇÃO -';
+        $posto  = (!empty($posto)) ? $posto . ' '      : 'NC ';
+        $orgao  = (!empty($orgao)) ? '(' . $orgao .')' : '(NC)';
+        $cpf    = (!empty($cpf))   ? ',CPF:' .$cpf     : ',CPF:NC';
+        
+        $indice = array ('!P','!N','!C','!O');
+        $trocar = array ($posto,$nome,$cpf,$orgao);
+        
+        return str_replace($indice, $trocar,$param);
+
     }
     
 }

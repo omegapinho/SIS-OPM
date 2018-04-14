@@ -23,6 +23,10 @@ class avaliacao_rankingaluno extends TRecord
         parent::addAttribute('posicao');
         parent::addAttribute('avaliacao_ranking_id');
         parent::addAttribute('aluno_id');
+        //Adicionados em 2018-04-12
+        parent::addAttribute('cpf');
+        parent::addAttribute('recuperado');
+        parent::addAttribute('reprovado');
     }
 
     

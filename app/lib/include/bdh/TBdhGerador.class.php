@@ -1127,6 +1127,12 @@ class TBdhGerador
  * @hrinix        = Hora do início da escala Extra
  * @hrtrab        = Quantidade de Horas trabalhadas
  * @tescala       = tipo de Escala Extra (1 = Administrativa e 2 = Renumerada)
+ * @dtinicioaf    = Data inicial do afastamentos
+ * @dtfimaf       = Data final do afastamento
+ * @bgaf          = BG de publicação do afastamento
+ * @anobgaf       = Ano do BG
+ * @afasta_id     = Código do afastamento
+ * @lota_info     = OPM selecionada é a mesma que informa a escala ? S ou N
  *
  *====================================================================================*/
     public function main_escala ($policiais,$slc_opm, $action = "ORDINARIA",

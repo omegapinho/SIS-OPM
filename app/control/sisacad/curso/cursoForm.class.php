@@ -125,6 +125,7 @@ class cursoForm extends TPage
         $this->form->addQuickAction('Avaliações',  new TAction(array($this,'onAvalia')), 'fa:book red');
         $this->form->addQuickAction('Ver Progresso',  new TAction(array($this,'onGraficos')), 'fa:bar-chart black');
         $this->form->addQuickAction('C.H. Usada',  new TAction(array($this,'onCargaHoraria')), 'fa:calendar red');
+        $this->form->addQuickAction('Professores',  new TAction(array($this,'onRelatorioProfessores')), 'fa:users darkgray');
         $this->form->addQuickAction(_t('Back to the listing'),  new TAction(array('cursoList', 'onReload')), 'ico_back.png');
 
         // vertical box container
@@ -709,5 +710,113 @@ class cursoForm extends TPage
 
         return $lista;
     }//Fim Módulo 
- 
+/*------------------------------------------------------------------------------
+ *    Relatório de Professores em suas turmas
+ *------------------------------------------------------------------------------*/
+     public static function onRelatorioProfessores ($param = null)
+     {
+         
+         if (empty($param['id']))
+         {
+             new TMessage('info','Por favor, salve primeiro!!!');
+         }
+         else
+         {
+    
+            $fer = new TFerramentas();
+            $sis = new TSisacad();
+            try
+            {
+                TTransaction::open('sisacad');
+                $curso = new curso ($param['id']);
+                //Busca todos professores que trabalham nas turmas
+                $sql1  = "(SELECT id FROM sisacad.turma WHERE curso_id = " . $param['id'] . ")";
+                $sql2  = "(SELECT id FROM sisacad.materia WHERE turma_id IN " . $sql1 . ")";
+                $sql3  = "(SELECT professor_id FROM sisacad.professormateria WHERE materia_id IN " . $sql2 . ")";
+                $professores = professor::where ('id','IN',$sql3)->orderBy('nome','ASC')->load();
+                
+                //Definições das tabelas
+                $head_p     = array('Identificação','Relação');//cabeçalho principal
+                $head_m     = array('Turma - Disciplina');//Cabeçalho da sub-tablea
+                $cabecalho  = '<h4>Relatório de Professores do Curso: ' . $curso->nome;//Cabeçalho do Relatório
+                //Lista de Professores
+                $lista_p    = array();
+                if (!empty($professores))
+                {
+                    foreach ($professores as $professor)
+                    {
+                        $dado = array();//Lista de dados para item de tabela
+                        
+                        $dado['identificacao'] = $professor->getidentificacao('!P!N!C!O') ;//Monta nome do professor
+                        //ativa filtro para pegar só as matérias que estão no curso
+                        $filtro = new TFilter('materia_id','IN',$sql2);
+                        $materias = $professor->getmaterias($filtro);
+                        //Monta sub-tabela com os disciplinas do professor no curso
+                        if (!empty($materias))
+                        {
+                            $lista_t = array();//Lista de matérias
+                            foreach ($materias as $materia)
+                            {
+                                $turma      = $materia->materia->turma->sigla;
+                                $disciplina = $materia->materia->disciplina->nome;
+                                $turma      = (!empty($turma))      ? $turma      : 'NC';
+                                $disciplina = (!empty($disciplina)) ? $disciplina : 'NC';
+                                $lista_t[]  = $turma . '  -||-  ' . $disciplina;//Inclui o nome da turma e disciplina
+                            }
+                            asort($lista_t);//Põe tudo em ordem alfabética
+                            //Remonta a listagem para montar a sub-tabela
+                            $lista_m = array();
+                            foreach($lista_t as $l_t)
+                            {
+                                $lista_m[] = array($l_t);
+                            }
+                            $tabela_m       = $fer->geraTabelaHTML($lista_m,$head_m,array('tab'=>'border="1px" '.
+                                                                'bordercolor="black" width="100%" '.
+                                                                'style="border-collapse: collapse;"',
+                                                                'cab'=>'style="background: lightblue; text-align: center;"',
+                                                                'cel'=>'style="background: blue;"'));
+                        }
+                        else
+                        {
+                            $tabela_m       = '--  SEM DISCIPLNAS NESTE CURSO --';
+                        }
+                        $dado['disciplina'] = $tabela_m;//Adiciona ao professor sua tabela de disciplinas no curso
+                        $lista_p[] = $dado;
+                    }
+                    $tabela_p       = $fer->geraTabelaHTML($lista_p,$head_p,array('tab'=>'border="1px" '.
+                                                        'bordercolor="black" width="100%" '.
+                                                        'style="border-collapse: collapse;"',
+                                                        'cab'=>'style="background: lightblue; text-align: center;"',
+                                                    'cel'=>'style="background: blue;"'));
+                    //Abre janela com a pesquisa
+                    if (!empty($tabela_p))
+                    {
+                        $rel = new TBdhReport();
+                        $bot = $rel->scriptPrint();
+                        $cab = '<center>ESTADO DE GOIÁS<br>POLÍCIA MILITAR DO ESTADO DE GOIÁS'.
+                               '<h5>COMANDO DA ACADEMIA DE POLICIAL MILITAR - CAPM</h5>'.
+                                $cabecalho . '<br></center>';
+                        $botao = '<center>'.$bot['botao'].'</center>';
+                        $tabela = $bot['codigo'] . '<div id="relatorio">' . $cab . $tabela_p . '</div>' . $botao;
+                        $window = TWindow::create('Relatório de Professores', 1400, 500);
+                        $window->add($tabela);
+                        $window->show();
+                    }
+                }
+                else
+                {
+                    throw new Exception ('Não há professores vinculados ao curso ' . $curso->nome);    
+                }
+                    
+                TTransaction::close();
+            }
+            catch (Exception $e)
+            {
+                new TMessage('error', $e->getMessage());
+                TTransaction::rollback();
+            }
+    
+        }
+    }//Fim Módulo
+    
 }//Fim Classe

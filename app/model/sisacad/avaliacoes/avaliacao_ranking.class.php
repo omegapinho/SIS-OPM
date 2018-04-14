@@ -58,10 +58,14 @@ class avaliacao_ranking extends TRecord
     /**
      * Method getavaliacao_rankingalunos
      */
-    public function getavaliacao_rankingalunos()
+    public function getavaliacao_rankingalunos($param = null)
     {
         $criteria = new TCriteria;
         $criteria->add(new TFilter('avaliacao_ranking_id', '=', $this->id));
+        if ($param != null)
+        {
+            $criteria->setProperties($param); // order, offset
+        }
         return avaliacao_rankingaluno::getObjects( $criteria );
     }
     

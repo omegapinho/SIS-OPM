@@ -1,7 +1,7 @@
 <?php
 /**
  * turmaForm Form
- * @author  <your name here>
+ * @author  Fernando de Pinho Araújo
  */
 class turmaForm extends TPage
 {
@@ -106,7 +106,7 @@ class turmaForm extends TPage
         
 
         // create the form actions
-        if ($this->nivel_sistema>80)
+        if ($this->nivel_sistema > 80)
         {
             $this->form->addQuickAction(_t('Save'), new TAction(array($this, 'onSave')), 'fa:floppy-o');
             $this->form->addQuickAction(_t('New'),  new TAction(array($this, 'onClear')), 'bs:plus-sign green');
@@ -124,14 +124,15 @@ class turmaForm extends TPage
         }
         $this->form->addQuickAction('Inscreve Alunos',  new TAction(array($this, 'onMatricula')), 'fa:user blue');
         //var_dump($this->config);
-        if ($this->nivel_sistema>= $this->config[$this->cfg_vincula])
+        if ($this->nivel_sistema >= $this->config[$this->cfg_vincula])
         {
             $this->form->addQuickAction('Designação de Professor',  new TAction(array($this, 'onDesigna')), 'fa:graduation-cap black');
         }
-        $this->form->addQuickAction('Inclusão de Documentação',  new TAction(array($this, 'onDocumento')), 'fa:download black');
-        $this->form->addQuickAction('Edita Disciplinas',  new TAction(array($this, 'onEditaDisciplinas')), 'fa:exchange red');
-        $this->form->addQuickAction('Resultados',  new TAction(array($this, 'onVerResultados')), 'fa:eye red');
-       
+        $this->form->addQuickAction('Inclusão de Documentação', new TAction(array($this, 'onDocumento')), 'fa:download black');
+        $this->form->addQuickAction('Edita Disciplinas',        new TAction(array($this, 'onEditaDisciplinas')), 'fa:exchange red');
+        $this->form->addQuickAction('Resultados',               new TAction(array($this, 'onVerResultados')), 'fa:eye red');
+        $this->form->addQuickAction('Professores',              new TAction(array($this, 'onRelatorioProfessores')), 'fa:users darkgray');
+        $this->form->addQuickAction('Ranking',                  new TAction(array($this, 'onCriaRankingTurma')), 'fa:list-ol darkgray');       
         if (empty($curso))
         {
             $this->form->addQuickAction(_t('Back to the listing'),  new TAction(array('turmaList', 'onReload')), 'ico_back.png');
@@ -225,7 +226,6 @@ class turmaForm extends TPage
             $cidade->setValue('GOIÂNIA');
             $opm_id->setValue(48586);
         }
-        
         // vertical box container
         $container = new TVBox;
         $container->style = 'width: 90%';
@@ -787,13 +787,9 @@ class turmaForm extends TPage
          else
          {
               TSession::setValue('turma_militar',$data);
-              //TApplication::loadPage('professorMateriaList');
               TApplication::loadPage('turmaProfessorForm','onEdit',array('key'=>$data->id));
-              //var_dump($data);
          }
          $this->form->setData($data);
-        
-        
     }//Fim Módulo
 /*------------------------------------------------------------------------------
  *  Formulário para a Carga de Documentos
@@ -863,6 +859,297 @@ class turmaForm extends TPage
               //var_dump($data);
          }
          $this->form->setData($data);
-    }
+    }//Fim módulo
+/*------------------------------------------------------------------------------
+ *    Relatório de Professores
+ *------------------------------------------------------------------------------*/
+     public static function onRelatorioProfessores ($param = null)
+     {
+         
+         if (empty($param['id']))
+         {
+             new TMessage('info','Por favor, salve primeiro!!!');
+         }
+         else
+         {
+    
+            $fer = new TFerramentas();
+            $sis = new TSisacad();
+            try
+            {
+                TTransaction::open('sisacad');
+                $turma = new turma ($param['id']);
+                //Busca todos professores que trabalham nas turmas
+                //$sql1  = "(SELECT id FROM sisacad.turma WHERE curso_id = " . $param['id'] . ")";
+                $sql2  = "(SELECT id FROM sisacad.materia WHERE turma_id =  " . $param['id'] . ")";
+                $sql3  = "(SELECT professor_id FROM sisacad.professormateria WHERE materia_id IN " . $sql2 . ")";
+                $professores = professor::where ('id','IN',$sql3)->orderBy('nome','ASC')->load();
+                
+                //Definições das tabelas
+                $head_p     = array('Identificação','Relação');//cabeçalho principal
+                $head_m     = array('Turma - Disciplina');//Cabeçalho da sub-tablea
+                $cabecalho  = '<h4>Relatório de Professores da turma: ' . $turma->nome . '(' . $turma->curso->sigla . ')';//Cabeçalho do Relatório
+                //Lista de Professores
+                $lista_p    = array();
+                if (!empty($professores))
+                {
+                    foreach ($professores as $professor)
+                    {
+                        $dado = array();//Lista de dados para item de tabela
+                        
+                        $dado['identificacao'] = $professor->getidentificacao('!P!N!C!O') ;//Monta nome do professor
+                        //ativa filtro para pegar só as matérias que estão no curso
+                        $filtro = new TFilter('materia_id','IN',$sql2);
+                        $materias = $professor->getmaterias($filtro);
+                        //Monta sub-tabela com os disciplinas do professor no curso
+                        if (!empty($materias))
+                        {
+                            $lista_t = array();//Lista de matérias
+                            foreach ($materias as $materia)
+                            {
+                                $turma      = $materia->materia->turma->sigla;
+                                $disciplina = $materia->materia->disciplina->nome;
+                                $turma      = (!empty($turma))      ? $turma      : 'NC';
+                                $disciplina = (!empty($disciplina)) ? $disciplina : 'NC';
+                                $lista_t[]  = $turma . '  -||-  ' . $disciplina;//Inclui o nome da turma e disciplina
+                            }
+                            asort($lista_t);//Põe tudo em ordem alfabética
+                            //Remonta a listagem para montar a sub-tabela
+                            $lista_m = array();
+                            foreach($lista_t as $l_t)
+                            {
+                                $lista_m[] = array($l_t);
+                            }
+                            $tabela_m       = $fer->geraTabelaHTML($lista_m,$head_m,array('tab'=>'border="1px" '.
+                                                                'bordercolor="black" width="100%" '.
+                                                                'style="border-collapse: collapse;"',
+                                                                'cab'=>'style="background: lightblue; text-align: center;"',
+                                                                'cel'=>'style="background: blue;"'));
+                        }
+                        else
+                        {
+                            $tabela_m       = '--  SEM DISCIPLNAS NESTE CURSO --';
+                        }
+                        $dado['disciplina'] = $tabela_m;//Adiciona ao professor sua tabela de disciplinas no curso
+                        $lista_p[] = $dado;
+                    }
+                    $tabela_p       = $fer->geraTabelaHTML($lista_p,$head_p,array('tab'=>'border="1px" '.
+                                                        'bordercolor="black" width="100%" '.
+                                                        'style="border-collapse: collapse;"',
+                                                        'cab'=>'style="background: lightblue; text-align: center;"',
+                                                    'cel'=>'style="background: blue;"'));
+                    //Abre janela com a pesquisa
+                    if (!empty($tabela_p))
+                    {
+                        $rel = new TBdhReport();
+                        $bot = $rel->scriptPrint();
+                        $cab = '<center>ESTADO DE GOIÁS<br>POLÍCIA MILITAR DO ESTADO DE GOIÁS'.
+                               '<h5>COMANDO DA ACADEMIA DE POLICIAL MILITAR - CAPM</h5>'.
+                                $cabecalho . '<br></center>';
+                        $botao = '<center>'.$bot['botao'].'</center>';
+                        $tabela = $bot['codigo'] . '<div id="relatorio">' . $cab . $tabela_p . '</div>' . $botao;
+                        $window = TWindow::create('Relatório de Professores', 1000, 500);
+                        $window->add($tabela);
+                        $window->show();
+                    }
+                }
+                else
+                {
+                    throw new Exception ('Não há professores vinculados à turma ' . $turma->nome);    
+                }
+                    
+                TTransaction::close();
+            }
+            catch (Exception $e)
+            {
+                new TMessage('error', $e->getMessage());
+                TTransaction::rollback();
+            }
+    
+        }
+    }//Fim Módulo
+/*------------------------------------------------------------------------------
+ *  Ver Resultados de Provas
+ *------------------------------------------------------------------------------*/
+    public static function onCriaRankingTurma ($param = null)
+    {
+         $fer = new TFerramentas;
+         try
+         {
+             if (empty($param['id']))
+             {
+                 throw new Exception('Por favor, salve a turma primeiro!!!');
+             }
+             TTransaction::open('sisacad');
+             TTransaction::setLogger(new TLoggerTXT('tmp/turmaFormRanking.txt'));
+             $criteria  = new TCriteria;
+             $criteria->add(new TFilter('turma_id','=',$param['id']));
+             $criteria->add(new TFilter('oculto','=','S'));
+             
+             $materias  = new TRepository('materia');
+             $count     = $materias->count($criteria);
+             if ($count <= 0)
+             {
+                 throw new Exception('Nenhuma Materia da turma foi encerrada ainda!');
+             }
+             
+             //Verificar se já existe um ranking e pegar sua id, se não, cria um ranking novo             
+             $ranking = avaliacao_ranking::where('turma_id','=',$param['id'])->load();
+             if (count($ranking) === 0)
+             {
+                 $ranking = new avaliacao_ranking;
+                 $ranking->data_fim             = date('Y-m-d');
+                 $ranking->data_atualizado      = date('Y-m-d');
+                 $ranking->usuario              = TSession::getValue('login');
+                 $ranking->usuario_atualizador  = TSession::getValue('login');
+                 $ranking->oculto               = 'N';
+                 $ranking->turma_id             = $param['id'];
+                 $ranking->store();
+             }
+             else
+             {
+                 $ranking = $ranking[0];
+                 $ranking->usuario_atualizador = TSession::getValue('login');
+                 $ranking->data_atualizado     = date('Y-m-d');
+                 $ranking->store();
+                 //Apagar a relação de alunos do ranking
+                 $rankers = avaliacao_rankingaluno::where('avaliacao_ranking_id','=',$ranking->id)->delete();
+             }
+             
+             //Busca a lista de alunos para fazer a média
+             $alunos = aluno::where('turma_id','=',$param['id'])->load();
+             if (count($alunos) == 0)
+             {
+                 throw new Exception('Aluno Matriculado na Turma!');
+             }
+             
+             //Calcula a média de cada aluno e salva no avaliacao_rankingaluno
+             $lista_ap = array();
+             $nota_ap  = array();
+             $lista_rp = array();
+             $nota_rp  = array();
+             foreach ($alunos as $aluno)
+             {
+                 //Query para pesquisa da nota
+                 $sql1 = "SELECT AVG(nota) FROM sisacad.avaliacao_finalaluno WHERE aluno_id = " . $aluno->id ;
+                 $sql2 = "SELECT COUNT(aprovado) FROM sisacad.avaliacao_finalaluno WHERE aluno_id = " . $aluno->id .
+                         " AND aprovado != 'S'";
+                         
+                 $sql3 = "SELECT DISTINCT recuperado FROM sisacad.avaliacao_finalaluno WHERE aluno_id = " . $aluno->id .
+                         " AND recuperado = 'S'";
+                 $sqlf = "SELECT (" . $sql1 . ") AS nota, (" . $sql2 . ") AS reprovado, (" . $sql3 . ") AS recuperado";
+                 /*
+                  * nota       = média das notas do aluno
+                  * recuperado = se passou por recuperação (muda de lista)
+                  * reprovado  = quantidade de disciplinas que reprovou
+                  */
+                 $conn   = TTransaction::get(); // obtém a conexão
+                 $sth    = $conn->prepare($sqlf);
+                 $sth->execute();
+                 $result = $sth->fetchAll();
+                 $nota   = 0;
+                 if (is_array($result))
+                 {
+                     $result                   = $result[0];
+                 }
+                 //Trabalha dados
+                 $nota                         = $result['nota'];
+                 $recuperado                   = $result['recuperado'];
+                 $recuperado                   = (is_null($recuperado) || $recuperado == '') ? 'N' : $recuperado; 
+                 $reprovado                    = $result['reprovado'];
+                 //Prepara array com lista de itens de cada aluno
+                 $dado                         = array();
+                 $dado['aluno_id']             = $aluno->id;
+                 $dado['avaliacao_ranking_id'] = $ranking->id;
+                 $dado['cpf']                  = $aluno->cpf;
+                 $dado['nota']                 = $nota;
+                 $dado['recuperado']           = $recuperado;
+                 $dado['reprovado']            = $reprovado;
+                 $lista[$nota]                 = $dado;
+                 //Se foi reprovado ou passou por recuperação, troca a lista
+                 if ($reprovado > 0 || $recuperado == 'S')
+                 {
+                     $lista_rp[] = $dado;
+                     $nota_rp[]  = $nota;
+                 }
+                 else
+                 {
+                     $lista_ap[] = $dado;
+                     $nota_ap[]  = $nota;
+                 }
+             }
+             //Salva o avaliacao_rankingaluno memorizando a média, o aluno_id e o cpf do aluno
+             //Faz a classificação
+             array_multisort($nota_ap,$lista_ap);//Classifica os aprovados
+             array_multisort($nota_rp,$lista_rp);//Classifica os reprovados
+             $lista = array_merge_recursive($lista_ap,$lista_rp);//Funde as duas listas
+             $posicao = 1;
+             foreach ($lista as $l)
+             {
+                 $l['posicao'] = $posicao;
+                 $posicao ++;
+                 $ranker       = new avaliacao_rankingaluno();
+                 $ranker->fromArray($l);
+                 $ranker->store();
+             }
+             //Monta a visualização do ranking
+            //Definições das tabelas
+            $head_p     = array('Posição','Identificação','Status','Nota');//cabeçalho principal
+            //$head_m     = array('Turma - Disciplina');//Cabeçalho da sub-tablea
+            $cabecalho  = '<h4>Ranking dos Alunos da Turma: ' . $ranking->turma->nome . '(' . $ranking->turma->curso->sigla . ')';//Cabeçalho do Relatório
+            //Lista de Alunos
+            $alunos = $ranking->getavaliacao_rankingalunos(array('ordem'=>'nota','sentido'=>'ASC'));
+            $lista_p    = array();
+            if (!empty($alunos))
+            {
+                foreach ($alunos as $aluno)
+                {
+                    $dado = array();//Lista de dados para item de tabela
+                    
+                    $dado['posicao']       = $aluno->posicao;
+                    $dado['identificacao'] = $aluno->aluno->getidentificacao() ;//Monta nome do aluno
+                    
+                    $reprovado             = $aluno->reprovado;
+                    $reprovado             = ($reprovado == 'N') ? 'APROVADO' : 'REPROVADO';
+                    
+                    $dado['status']        = $reprovado;
+                    $dado['nota']          = $aluno->nota;
+                    $lista_p[] = $dado;
+                }
+                $tabela_p       = $fer->geraTabelaHTML($lista_p,$head_p,array('tab'=>'border="1px" '.
+                                                    'bordercolor="black" width="100%" '.
+                                                    'style="border-collapse: collapse;"',
+                                                    'cab'=>'style="background: lightblue; text-align: center;"',
+                                                'cel'=>'style="background: blue;"'));
+                //Abre janela com a pesquisa
+                if (!empty($tabela_p))
+                {
+                    $rel = new TBdhReport();
+                    $bot = $rel->scriptPrint();
+                    $cab = '<center>ESTADO DE GOIÁS<br>POLÍCIA MILITAR DO ESTADO DE GOIÁS'.
+                           '<h5>COMANDO DA ACADEMIA DE POLICIAL MILITAR - CAPM</h5>'.
+                            $cabecalho . '<br></center>';
+                    $botao = '<center>'.$bot['botao'].'</center>';
+                    $tabela = $bot['codigo'] . '<div id="relatorio">' . $cab . $tabela_p . '</div>' . $botao;
+                    $window = TWindow::create('Ranking de Alunos', 1000, 500);
+                    $window->add($tabela);
+                    $window->show();
+                }
+            }
+            else
+            {
+                throw new Exception ('Não há alunos vinculados à turma ' . $ranking->turma->nome);    
+            }
+             
+             
+             TTransaction::close();
+         }
+        catch (Exception $e)
+        {
+            new TMessage('error', $e->getMessage());
+            TTransaction::rollback();
+        }
+
+    }//Fim módulo
 }//Fim Classe
 
